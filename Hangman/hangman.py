@@ -1,8 +1,16 @@
 import random
 
 
-def start_game(words):
+def game_menu():
     print('H A N G M A N')
+    answer = input('Type "play" to play the game, "exit" to quit: ')
+    if answer == 'play':
+        return 1
+    elif answer == 'exit':
+        return 0
+
+
+def pick_word(words):
     return random.choice(words)
 
 
@@ -16,6 +24,7 @@ def get_letter():
         return 0
     return user_input
 
+
 def check_letter(letter):
     if letter in word_of_the_game:
         for i in range(len(word_of_the_game)):
@@ -27,27 +36,28 @@ def check_letter(letter):
         return 0
 
 
-word_pool = ['python', 'java', 'kotlin', 'javascript']
-word_of_the_game = start_game(word_pool)
-current_word = list('-' * len(word_of_the_game))
-used_letters = []
-attempts_limit = 8
-attempts_counter = 0
-while attempts_counter < attempts_limit:
-    print('\n' + ''.join(current_word))
-    new_letter = get_letter()
-    if new_letter == 0:
-        continue
-    elif new_letter in used_letters:      # была такая буква
-        print('You already typed this letter')
-        continue
+while game_menu():
+    word_pool = ['python', 'java', 'kotlin', 'javascript']
+    word_of_the_game = pick_word(word_pool)
+    current_word = list('-' * len(word_of_the_game))
+    used_letters = []
+    attempts_limit = 8
+    attempts_counter = 0
+    while attempts_counter < attempts_limit:
+        print('\n' + ''.join(current_word))
+        new_letter = get_letter()
+        if new_letter == 0:
+            continue
+        elif new_letter in used_letters:      # была такая буква
+            print('You already typed this letter')
+            continue
+        else:
+            used_letters.append(new_letter)
+        if not check_letter(new_letter):      # ошибка
+            attempts_counter += 1
+            continue
+        if current_word == word_of_the_game:
+            print('You guessed the word' + word_of_the_game + '!')
+            break
     else:
-        used_letters.append(new_letter)
-    if not check_letter(new_letter):    # ошибка
-        attempts_counter += 1
-        continue
-    if current_word == word_of_the_game:
-        print('You guessed the word' + word_of_the_game + '!')
-        break
-else:
-    print('You are hanged!')
+        print('You are hanged!')
