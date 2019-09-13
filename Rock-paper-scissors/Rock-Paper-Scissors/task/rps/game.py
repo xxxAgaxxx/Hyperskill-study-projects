@@ -39,6 +39,6 @@ while True:
         Paper>rock>scissors>paper and so on''')
         continue
     computers_shape = computers_decision(shape_pool)
-    while round_result(players_shape,computers_shape) == '3':
-        continue
-print('Bye!')
+    while round_result(players_shape, computers_shape) == 3:
+        break
+print('Bye!', end='')
