@@ -1,4 +1,5 @@
+*.pyc
 /Rock-paper-scissors/test_helper.py
 /Rock-paper-scissors/.idea/*
-/Rock-paper-scissors/Rock-paper-scissors/task/
-!/Rock-paper-scissors/Rock-paper-scissors/task/rps/*
+/Rock-paper-scissors/Rock-paper-scissors/task/hstest/
+/Rock-paper-scissors/Rock-paper-scissors/task/tests.py
