@@ -36,7 +36,7 @@ while True:
     if players_shape == '!help':
         print('''Please type "rock", "paper" or "scissors"
         You win if your shape beats computer's shape:
-        Paper>rock>scissors>paper and so on''')
+        Paper > rock > scissors > paper and so on''')
         continue
     computers_shape = computers_decision(shape_pool)
     while round_result(players_shape, computers_shape) == 3:
