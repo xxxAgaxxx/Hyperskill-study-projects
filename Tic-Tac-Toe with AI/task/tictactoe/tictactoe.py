@@ -1,6 +1,6 @@
 def initiate_field():
     field_string = input('Enter cells: ')
-    cell_states = [field_string[i:i+1] for i in range(1, len(field_string) - 1, 1)]
+    cell_states = [i for i in field_string[1:10]]
     return cell_states
 
 
