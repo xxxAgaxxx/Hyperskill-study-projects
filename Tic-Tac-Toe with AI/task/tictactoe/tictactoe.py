@@ -1,20 +1,22 @@
+from string import digits
+
+
 def initiate_field() -> list:
     """ Asks the user to specify the current state of the field.
         A string of 9 characters in quotes is expected to be entere.
         :rtype: list
-        :return:
-        Nested lists of 3 signs
+        :return: Nested lists with 3 signs each
     """
     field_as_string = input('Enter cells: ')
     if len(field_as_string) != 9:
-        print('I wanna get string of field cell states without any other signs')
+        print('I wanna get string of 9 field cell states without any other signs')
         return 0
     for sign in field_as_string:
         if sign not in 'XO_':
             print('You can use only X and O signs, and _ for whitespaces')
             return 0
     field_as_string = field_as_string.replace('_', ' ')
-    cell_states = [[field_as_string[sign + 3 * i] for sign in range(0, 3)] for i in range(3)]
+    cell_states = [[field_as_string[sign + 3 * i] for sign in range(3)] for i in range(3)]
     if abs(field_as_string.count('X') - field_as_string.count('O')) > 1:
         show_field(cell_states)
         print("Impossible")
@@ -22,7 +24,7 @@ def initiate_field() -> list:
     return cell_states
 
 
-def show_field(field_in_list):
+def show_field(field_in_list: list):
     pass
     """ Prints current state of the field with some cosmetics
         Input is nested lists with lines of field
@@ -33,10 +35,10 @@ def show_field(field_in_list):
     for i in range(3):
         print(f'| {field_in_list[i][0]} {field_in_list[i][1]} {field_in_list[i][2]} |')
     print('---------')
-    return 1
+    return
 
 
-def drawn(field_in_list):
+def drawn(field_in_list: list):
     """ Check that field has empty cells
     """
     if not sum(x.count(' ') for x in field_in_list):
@@ -46,7 +48,14 @@ def drawn(field_in_list):
         return False
 
 
-def win_condition(field_in_list):
+def win_condition(field_in_list: list):
+    """ Search for 3 X or O in a row on the field
+    :return:
+    False if one of players has 3 in a row (* wins)
+    False if both players has 3 in a row (Impossible state)
+    False if no one won and no empty cells remaining
+    else True (if field legit and no one won)
+    """
     o_is_winner = x_is_winner = 0
     # check diagonals
     if (field_in_list[0][0] == field_in_list[1][1] == field_in_list[2][2]
@@ -86,24 +95,39 @@ def win_condition(field_in_list):
 
 
 def get_step():
-    """ Asks user to enter cell to make a step, checks that its blank,
-        and, if it is, sets the cell to state X, else informs user,
-        that step incorrect and asks for another one
-        Function modifies list with field
-    :return:
+    """ Asks user to enter coordinates of cell to set his sing
+        Format of coordinates 'M N' where M is column from left (1) to the right (3)
+                                          N is row from bottom (1) to the top (3)
+        Checks that received  data is two numbers in range (1 .. 3)
+        Checks that the cell at coordinates is empty and sets sign 'X' on the field
+    :return: True if player's turn accepted and field modified
     """
-    while True:
-        cell_coordinates = input('Enter the coordinates: ').split()
-        # check if field cell with cell coordinates is empty
-        # set cell with cell coordinates to 'X' and return
-        # else "This cell is occupied! Choose another one!"
-    pass
+    cell_coordinates = input('Enter the coordinates: ').split()
+    if len(cell_coordinates) != 2:
+        print("Please enter 2 coordinates")
+        return False
+    for coordinate in cell_coordinates:
+        if coordinate not in digits:
+            print("You should enter numbers!")
+            return False
+        elif int(coordinate) < 1 or int(coordinate) > 3:
+            print('Coordinates should be from 1 to 3!')
+            return False
+    # forms coordinates list[x][y]
+    # x — row(0..2) from left to the right, y — column(0..2) from top to bottom
+    adapted_coordinates = [3 - int(cell_coordinates[1]), int(cell_coordinates[0]) - 1]
+    if is_empty(adapted_coordinates):
+        return True
+    return False
 
 
-def is_blank(x, y):
-    """ Returns True if cell with coordinates is not X or O
-    """
-    pass
+def is_empty(coordinates: list):
+    if current_field[coordinates[0]][coordinates[1]] == ' ':
+        current_field[coordinates[0]][coordinates[1]] = 'X'
+        return True
+    else:
+        print('This cell is occupied! Choose another one!')
+        return False
 
 
 current_field = initiate_field()
@@ -111,4 +135,6 @@ if current_field:
     show_field(current_field)
     # if win_condition(current_field):
     #     print("Game not finished")
-get_step()
+while not get_step():
+    pass
+show_field(current_field)
