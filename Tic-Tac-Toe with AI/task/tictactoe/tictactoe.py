@@ -1,27 +1,7 @@
 from string import digits
 
 
-def initiate_field() -> list:
-    """ Asks the user to specify the current state of the field.
-        A string of 9 characters in quotes is expected to be entere.
-        :rtype: list
-        :return: Nested lists with 3 signs each
-    """
-    field_as_string = input('Enter cells: ')
-    if len(field_as_string) != 9:
-        print('I wanna get string of 9 field cell states without any other signs')
-        return 0
-    for sign in field_as_string:
-        if sign not in 'XO_':
-            print('You can use only X and O signs, and _ for whitespaces')
-            return 0
-    field_as_string = field_as_string.replace('_', ' ')
-    cell_states = [[field_as_string[sign + 3 * i] for sign in range(3)] for i in range(3)]
-    if abs(field_as_string.count('X') - field_as_string.count('O')) > 1:
-        show_field(cell_states)
-        print("Impossible")
-        return 0
-    return cell_states
+
 
 
 def show_field(field_in_list: list):
@@ -94,12 +74,12 @@ def win_condition(field_in_list: list):
     return True
 
 
-def get_step():
+def get_step(sign: str):
     """ Asks user to enter coordinates of cell to set his sing
         Format of coordinates 'M N' where M is column from left (1) to the right (3)
                                           N is row from bottom (1) to the top (3)
         Checks that received  data is two numbers in range (1 .. 3)
-        Checks that the cell at coordinates is empty and sets sign 'X' on the field
+        Checks that the cell at coordinates is empty and sets sign from input on the field
     :return: True if player's turn accepted and field modified
     """
     cell_coordinates = input('Enter the coordinates: ').split()
@@ -116,25 +96,51 @@ def get_step():
     # forms coordinates list[x][y]
     # x — row(0..2) from left to the right, y — column(0..2) from top to bottom
     adapted_coordinates = [3 - int(cell_coordinates[1]), int(cell_coordinates[0]) - 1]
-    if is_empty(adapted_coordinates):
+    if is_empty(adapted_coordinates, sign):
         return True
     return False
 
 
-def is_empty(coordinates: list):
+def is_empty(coordinates: list, sign: str):
     if current_field[coordinates[0]][coordinates[1]] == ' ':
-        current_field[coordinates[0]][coordinates[1]] = 'X'
+        current_field[coordinates[0]][coordinates[1]] = sign
         return True
     else:
         print('This cell is occupied! Choose another one!')
         return False
 
 
-current_field = initiate_field()
-if current_field:
-    show_field(current_field)
-    # if win_condition(current_field):
-    #     print("Game not finished")
-while not get_step():
-    pass
+current_field = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
 show_field(current_field)
+current_player = 'X'
+while True:
+    next_player = get_step(current_player)
+    show_field(current_field)
+    if not win_condition(current_field):
+        break
+    current_player = next_player
+
+
+
+
+# def initiate_field() -> list:
+#     """ Asks the user to specify the current state of the field.
+#         A string of 9 characters in quotes is expected to be entere.
+#         :rtype: list
+#         :return: Nested lists with 3 signs each
+#     """
+#     field_as_string = input('Enter cells: ')
+#     if len(field_as_string) != 9:
+#         print('I wanna get string of 9 field cell states without any other signs')
+#         return 0
+#     for sign in field_as_string:
+#         if sign not in 'XO_':
+#             print('You can use only X and O signs, and _ for whitespaces')
+#             return 0
+#     field_as_string = field_as_string.replace('_', ' ')
+#     cell_states = [[field_as_string[sign + 3 * i] for sign in range(3)] for i in range(3)]
+#     if abs(field_as_string.count('X') - field_as_string.count('O')) > 1:
+#         show_field(cell_states)
+#         print("Impossible")
+#         return 0
+#     return cell_states
