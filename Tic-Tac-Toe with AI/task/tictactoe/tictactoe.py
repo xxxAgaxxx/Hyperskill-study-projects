@@ -1,14 +1,10 @@
 from string import digits
 
 
-
-
-
 def show_field(field_in_list: list):
-    pass
     """ Prints current state of the field with some cosmetics
         Input is nested lists with lines of field
-    :param field: field as nested list of lines
+    :param field_in_list: field as nested list of lines
     :return:
     """
     print('---------')
@@ -31,10 +27,10 @@ def drawn(field_in_list: list):
 def win_condition(field_in_list: list):
     """ Search for 3 X or O in a row on the field
     :return:
-    False if one of players has 3 in a row (* wins)
-    False if both players has 3 in a row (Impossible state)
-    False if no one won and no empty cells remaining
-    else True (if field legit and no one won)
+    True if one of players has 3 in a row (* wins)
+    True if both players has 3 in a row (Impossible state)
+    True if no one won and no empty cells remaining (Draw)
+    else False (if field legit and no one won)
     """
     o_is_winner = x_is_winner = 0
     # check diagonals
@@ -60,44 +56,57 @@ def win_condition(field_in_list: list):
                 o_is_winner = 1
     if o_is_winner:
         if x_is_winner:
-            # when the field has three X in a row as well as three O in a row
             print('Impossible')
-            return False
+            return True
         else:
             print('O wins')
-            return False
+            return True
     elif x_is_winner:
         print('X wins')
-        return False
+        return True
     elif drawn(field_in_list):
-        return False
-    return True
+        return True
+    return False
 
 
-def get_step(sign: str):
-    """ Asks user to enter coordinates of cell to set his sing
-        Format of coordinates 'M N' where M is column from left (1) to the right (3)
-                                          N is row from bottom (1) to the top (3)
-        Checks that received  data is two numbers in range (1 .. 3)
-        Checks that the cell at coordinates is empty and sets sign from input on the field
-    :return: True if player's turn accepted and field modified
+def coordinates_are_valid(coordinates: list):
+    """Checks user enter two separate numbers in range from 1 to 3
+    :param coordinates: List of coordinates
+    :return: False if received more or less than 2 coordinates
+    False if coordinates not numbers
+    False if received coordinates less than 1 or more than 3
     """
-    cell_coordinates = input('Enter the coordinates: ').split()
-    if len(cell_coordinates) != 2:
+    if len(coordinates) != 2:
         print("Please enter 2 coordinates")
         return False
-    for coordinate in cell_coordinates:
+    for coordinate in coordinates:
         if coordinate not in digits:
             print("You should enter numbers!")
             return False
         elif int(coordinate) < 1 or int(coordinate) > 3:
             print('Coordinates should be from 1 to 3!')
             return False
+    return True
+
+
+def get_step(sign: str):
+    """ Asks user to enter coordinates of cell to set his sign
+        Format of coordinates 'M N' where M is column from left (1) to the right (3)
+                                          N is row from bottom (1) to the top (3)
+        Checks that received  data is two numbers in range (1 .. 3)
+        Checks that the cell at coordinates is empty and sets sign from input on the field
+    :return: If player's turn accepted and field modified returns opposite players sign, else — False
+    """
+    cell_coordinates = input('Enter the coordinates: ').split()
+    if not coordinates_are_valid(cell_coordinates):
+        return False
     # forms coordinates list[x][y]
     # x — row(0..2) from left to the right, y — column(0..2) from top to bottom
     adapted_coordinates = [3 - int(cell_coordinates[1]), int(cell_coordinates[0]) - 1]
     if is_empty(adapted_coordinates, sign):
-        return True
+        if sign == 'X':
+            return 'O'
+        return 'X'
     return False
 
 
@@ -115,32 +124,9 @@ show_field(current_field)
 current_player = 'X'
 while True:
     next_player = get_step(current_player)
+    if not next_player:
+        continue
     show_field(current_field)
-    if not win_condition(current_field):
+    if win_condition(current_field):
         break
     current_player = next_player
-
-
-
-
-# def initiate_field() -> list:
-#     """ Asks the user to specify the current state of the field.
-#         A string of 9 characters in quotes is expected to be entere.
-#         :rtype: list
-#         :return: Nested lists with 3 signs each
-#     """
-#     field_as_string = input('Enter cells: ')
-#     if len(field_as_string) != 9:
-#         print('I wanna get string of 9 field cell states without any other signs')
-#         return 0
-#     for sign in field_as_string:
-#         if sign not in 'XO_':
-#             print('You can use only X and O signs, and _ for whitespaces')
-#             return 0
-#     field_as_string = field_as_string.replace('_', ' ')
-#     cell_states = [[field_as_string[sign + 3 * i] for sign in range(3)] for i in range(3)]
-#     if abs(field_as_string.count('X') - field_as_string.count('O')) > 1:
-#         show_field(cell_states)
-#         print("Impossible")
-#         return 0
-#     return cell_states
