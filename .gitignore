@@ -1,4 +1,9 @@
-/Rock-paper-scissors/test_helper.py
-/Rock-paper-scissors/.idea/*
-/Rock-paper-scissors/Rock-paper-scissors/task/
-!/Rock-paper-scissors/Rock-paper-scissors/task/rps/*
+*.pyc
+/test_helper.py
+/.idea/*
+/Rock-paper-scissors/task/hstest/
+/Rock-paper-scissors/task/tests.py
+/Tic-Tac-Toe with AI/test_helper.py
+/Tic-Tac-Toe with AI/.idea/*
+/Tic-Tac-Toe with AI/task/hstest/
+/Tic-Tac-Toe with AI/task/tests.py
