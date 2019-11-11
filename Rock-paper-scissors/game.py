@@ -3,9 +3,8 @@ import random
 
 def get_shape():
     """Asks player to enter his shape ('rock', 'paper', or 'scissors' in classic edition).
-    At site
     Player could enter '!exit' to quit the game, so function returns string.
-    :return:players decision as string
+    :return:players decision as string or True in case when user need '!help'
     """
     shape = input()
     check_result = check_shape(shape)
@@ -14,9 +13,9 @@ def get_shape():
     elif check_result == 2:
         return False
     elif check_result == 3:
-        print('''Please type "rock", "paper" or "scissors"
-                    You win if your shape beats computer's shape:
-                    Paper > rock > scissors > paper and so on''')
+        # print('''Please type "rock", "paper" or "scissors"
+        #             You win if your shape beats computer's shape:
+        #             Paper > rock > scissors > paper and so on''')
         return True
     else:
         return True
@@ -37,6 +36,9 @@ def check_shape(shape):
         print('Sorry, unknown command. Possible special commands are:' + shape_pool)
         return 4
     if shape == '!help':
+        print('''Please type "rock", "paper" or "scissors"
+            You win if your shape beats computer's shape:
+            Paper > rock > scissors > paper and so on''')
         return 2
     if shape == '!exit':
         print('Bye!')
@@ -75,7 +77,19 @@ def round_result(player, computer):
 
 
 shape_pool = ['rock', 'paper', 'scissors']
-special_commands = ['!exit', '!help']
+special_commands = ['!exit', '!help', '!rating']
+players_scores = dict()
+
+try:
+    rating_file = open('rating.txt')
+    for line in rating_file:
+        players_scores.update({line.split()[0]: line.split()[1]})
+finally:
+    rating_file.close()
+
+player_name = input('Enter your name: ')
+print(f'Hello, {player_name}')
+
 while True:
     players_shape = get_shape()
     if players_shape:
