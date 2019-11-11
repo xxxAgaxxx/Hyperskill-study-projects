@@ -83,12 +83,15 @@ player_name = input('Enter your name: ')
 print(f'Hello, {player_name}')
 if player_name not in players_scores.keys():
     players_scores.update({player_name: 0})
-
+current_score = players_scores[player_name]
 while True:
     players_shape = get_shape()
-    print(type(players_shape))
     if players_shape is bool and not players_shape:
         break
     if shape_is_correct(players_shape):
         computers_shape = computers_decision(shape_pool)
-        round_result(players_shape, computers_shape)
+        winner = round_result(players_shape, computers_shape)
+        if winner == 'Draw':
+            current_score += 50
+        if winner == 'Player':
+            current_score += 100
