@@ -30,7 +30,7 @@ def shape_is_correct(players_shape):
                     Paper > rock > scissors > paper and so on''')
             return False
         if players_shape == '!rating':
-            print(f'Your rating: {players_scores[player_name]}')
+            print(f'Your rating: {current_scores}')
             return False
     else:
         print('Input incorrect! Possible shapes in this game is:', ', '.join(shape_pool))
@@ -62,36 +62,41 @@ def round_result(player, computer):
          (player == 'paper' and computer == 'scissors') or \
          (player == 'scissors' and computer == 'rock'):
         print('Sorry, but computer chose ' + computer)
-        return 'Player'
+        return 'Computer'
     else:
         print(f'Well done. Computer chose {computer} and failed')
-        return 'Computer'
+        return 'Player'
 
 
 shape_pool = ['rock', 'scissors', 'paper']
 special_commands = ['!help', '!rating']
 players_scores = dict()
 
-try:
-    rating_file = open('rating.txt')
+with open('rating.txt', 'r') as rating_file:
     for line in rating_file:
         players_scores.update({line.split()[0]: int(line.split()[1])})
-finally:
-    rating_file.close()
 
 player_name = input('Enter your name: ')
 print(f'Hello, {player_name}')
-if player_name not in players_scores.keys():
-    players_scores.update({player_name: 0})
-current_score = players_scores[player_name]
+initial_scores = players_scores.get(player_name, 0)
+current_scores = initial_scores
+# if player_name not in players_scores.keys():
+#     players_scores.update({player_name: 0})
+
 while True:
     players_shape = get_shape()
-    if players_shape is bool and not players_shape:
+    if type(players_shape) is bool and not players_shape:
         break
     if shape_is_correct(players_shape):
         computers_shape = computers_decision(shape_pool)
         winner = round_result(players_shape, computers_shape)
         if winner == 'Draw':
-            current_score += 50
+            current_scores += 50
         if winner == 'Player':
-            current_score += 100
+            current_scores += 100
+
+if current_scores != initial_scores:
+    players_scores.update({player_name: current_scores})
+with open('rating.txt', 'w') as rating_file:
+    for key, value in players_scores.items():
+        rating_file.write(f'{key} {value}\n')
