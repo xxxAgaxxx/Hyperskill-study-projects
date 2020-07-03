@@ -50,6 +50,15 @@ class Matrix:
         self.rows = tempmat.rows[:]
         return self
 
+    def __mul__(self, other):
+        if isinstance(other, (int, float)):
+            """ Multiply a matrix with number"""
+            new_matrix = Matrix(self.height, self.width)
+            for x in range(self.height):
+                row = [other * item for item in self.rows[x]]
+                new_matrix[x] = row
+            return new_matrix
+
     def read_matrix(self):
         """ Read a matrix line from standard input """
         for x in range(self.height):
@@ -60,11 +69,9 @@ if __name__ == '__main__':
     rows, cols = map(int, input().split())
     A = Matrix(rows, cols)
     A.read_matrix()
-    rows, cols = map(int, input().split())
-    B = Matrix(rows, cols)
-    B.read_matrix()
-    try:
-        C = A + B
-        print(C)
-    except MatrixError:
+    dims = list(map(int, input().split()))
+    if len(dims) == 1:
+        B = A * dims[0]
+        print(B)
+    elif len(dims) == 2:
         print('ERROR')
