@@ -25,13 +25,40 @@ class Matrix:
     def get_rank(self):
         return self.height, self.width
 
-    def get_transpose(self):
+    def main_transpose(self):
         """ Return a transpose of the matrix without
         modifying the matrix itself """
 
         height, width = self.height, self.width
         mat = Matrix(height, width)
         mat.rows = [list(item) for item in zip(*self.rows)]
+        return mat
+
+    def side_transpose(self):
+        """ Return a transpose of the matrix without
+        modifying the matrix itself """
+
+        height, width = self.height, self.width
+        mat = Matrix(height, width)
+        mat.rows = [list(item)[::-1] for item in zip(*self.rows)][::-1]
+        return mat
+
+    def vertical_transpose(self):
+        """ Return a transpose of the matrix without
+        modifying the matrix itself """
+
+        height, width = self.height, self.width
+        mat = Matrix(height, width)
+        mat.rows = [list(item[::-1]) for item in self.rows]
+        return mat
+
+    def horizontal_transpose(self):
+        """ Return a transpose of the matrix without
+        modifying the matrix itself """
+
+        height, width = self.height, self.width
+        mat = Matrix(height, width)
+        mat.rows = self.rows[::-1]
         return mat
 
     def __add__(self, mat):
@@ -67,42 +94,122 @@ class Matrix:
                 row = [other * item for item in self.rows[x]]
                 new_matrix[x] = row
             return new_matrix
-        elif isinstance(Matrix, other):
+        elif isinstance(other, Matrix):
             """ Multiple a matrix with this matrix and
             return the new matrix. Doesn't modify
             the current matrix """
 
             mat_height, mat_width = other.get_rank()
-            if (self.height != mat_width):
+            if (self.width != mat_height):
                 raise MatrixError("Matrices cannot be multipled!")
-            mat_t = other.get_transpose()
-            mulmat = Matrix(self.height, mat_height)
+            mat_t = other.main_transpose()
+            mulmat = Matrix(self.height, mat_width)
             for x in range(self.height):
-                for y in range(mat_t.m):
+                for y in range(mat_width):
                     mulmat[x][y] = sum([item[0]*item[1] for item in zip(self.rows[x], mat_t[y])])
             return mulmat
 
-    def read_matrix(self):
+    def read_matrix(self, msg=''):
         """ Read a matrix line from standard input """
+        if msg:
+            print(msg)
         for x in range(self.height):
-            self.rows[x] = list(map(int, input().strip().split()))
+            self.rows[x] = list(map(float, input().strip().split()))
+
+
+def select_action():
+    first_menu_lvl = '''1. Add matrices
+2. Multiply matrix by a constant
+3. Multiply matrices
+4. Transpose matrix
+0. Exit'''
+    print(first_menu_lvl)
+    selection = input('Your choice: ')
+    if selection == '1':
+        return 'add'
+    elif selection == '2':
+        return 'c_mul'
+    elif selection == '3':
+        return 'mat_mul'
+    elif selection == '4':
+        transpose_mode = select_transpose()
+        if transpose_mode == '1':
+            return 'main_trans'
+        elif transpose_mode == '2':
+            return 'side_trans'
+        elif transpose_mode == '3':
+            return 'v_trans'
+        elif transpose_mode == '4':
+            return 'h_trans'
+        else:
+            return None
+    else:
+        return None
+
+
+def select_transpose():
+    transpose_menu = '''1. Main diagonal
+2. Side diagonal
+3. Vertical line
+4. Horizontal line'''
+    print(transpose_menu)
+    return input('Your choice: ')
+
+
+def get_matrix(msg=''):
+    rows, cols = map(int, input('Enter matrix size: ').split())
+    tmp_matrix = Matrix(rows, cols)
+    tmp_matrix.read_matrix(msg)
+    return tmp_matrix
 
 
 if __name__ == '__main__':
-    rows, cols = map(int, input().split())
-    A = Matrix(rows, cols)
-    A.read_matrix()
-    dims = list(map(int, input().split()))
-    if len(dims) == 2:
-        rows, cols = dims
-        B = Matrix(rows, cols)
-        B.read_matrix()
-        try:
-            C = A * B
-            print(C)
-        except MatrixError:
-            print('ERROR')
-    elif len(dims) == 1:
-        B = A * dims[0]
-        print(B)
-
+    while True:
+        action = select_action()
+        if not action:
+            break
+        elif action == 'add':
+            A = get_matrix('Enter matrix:')
+            B = get_matrix('Enter matrix:')
+            try:
+                print('The result is:\n', A + B, sep='')
+            except MatrixError:
+                print('ERROR')
+        elif action == 'c_mul':
+            A = get_matrix('Enter matrix:')
+            const = float(input())
+            try:
+                print('The result is:\n', A * const, sep='')
+            except MatrixError:
+                print('ERROR')
+        elif action == 'mat_mul':
+            A = get_matrix('Enter matrix:')
+            B = get_matrix('Enter matrix:')
+            try:
+                print('The result is:\n', A * B, sep='')
+            except MatrixError:
+                print('ERROR')
+        elif action == 'main_trans':
+            A = get_matrix('Enter matrix:')
+            try:
+                print('The result is:\n', A.main_transpose(), sep='')
+            except MatrixError:
+                print('ERROR')
+        elif action == 'side_trans':
+            A = get_matrix('Enter matrix:')
+            try:
+                print('The result is:\n', A.side_transpose(), sep='')
+            except MatrixError:
+                print('ERROR')
+        elif action == 'v_trans':
+            A = get_matrix('Enter matrix:')
+            try:
+                print('The result is:\n', A.vertical_transpose(), sep='')
+            except MatrixError:
+                print('ERROR')
+        elif action == 'h_trans':
+            A = get_matrix('Enter matrix:')
+            try:
+                print('The result is:\n', A.horizontal_transpose(), sep='')
+            except MatrixError:
+                print('ERROR')
