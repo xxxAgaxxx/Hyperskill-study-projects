@@ -25,6 +25,15 @@ class Matrix:
     def get_rank(self):
         return self.height, self.width
 
+    def get_transpose(self):
+        """ Return a transpose of the matrix without
+        modifying the matrix itself """
+
+        height, width = self.height, self.width
+        mat = Matrix(height, width)
+        mat.rows = [list(item) for item in zip(*self.rows)]
+        return mat
+
     def __add__(self, mat):
         """ Add a matrix to this matrix and
         return the new matrix. Doesn't modify
@@ -58,6 +67,20 @@ class Matrix:
                 row = [other * item for item in self.rows[x]]
                 new_matrix[x] = row
             return new_matrix
+        elif isinstance(Matrix, other):
+            """ Multiple a matrix with this matrix and
+            return the new matrix. Doesn't modify
+            the current matrix """
+
+            mat_height, mat_width = other.get_rank()
+            if (self.height != mat_width):
+                raise MatrixError("Matrices cannot be multipled!")
+            mat_t = other.get_transpose()
+            mulmat = Matrix(self.height, mat_height)
+            for x in range(self.height):
+                for y in range(mat_t.m):
+                    mulmat[x][y] = sum([item[0]*item[1] for item in zip(self.rows[x], mat_t[y])])
+            return mulmat
 
     def read_matrix(self):
         """ Read a matrix line from standard input """
@@ -70,8 +93,16 @@ if __name__ == '__main__':
     A = Matrix(rows, cols)
     A.read_matrix()
     dims = list(map(int, input().split()))
-    if len(dims) == 1:
+    if len(dims) == 2:
+        rows, cols = dims
+        B = Matrix(rows, cols)
+        B.read_matrix()
+        try:
+            C = A * B
+            print(C)
+        except MatrixError:
+            print('ERROR')
+    elif len(dims) == 1:
         B = A * dims[0]
         print(B)
-    elif len(dims) == 2:
-        print('ERROR')
+
