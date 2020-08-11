@@ -1,3 +1,6 @@
+import copy
+
+
 class MatrixError(Exception):
     """ An exception class for Matrix """
     pass
@@ -19,7 +22,7 @@ class Matrix:
         self.rows[idx] = item
 
     def __str__(self):
-        s = '\n'.join([' '.join([str(item) for item in row]) for row in self.rows])
+        s = '\n'.join([' '.join(['{: f}'.format(item) for item in row]) for row in self.rows])
         return s + '\n'
 
     def get_rank(self):
@@ -116,13 +119,33 @@ class Matrix:
         for x in range(self.height):
             self.rows[x] = list(map(float, input().strip().split()))
 
+    def matrix_determinant(self):
+        if self.height != self.width:
+            raise MatrixError("Cannot calculate determinant for non-square matrix!")
+        if self.get_rank() == (1, 1):
+            return self.rows[0][0]
+        if self.get_rank() == (2, 2):
+            return self.rows[0][0] * self.rows[1][1] - self.rows[0][1] * self.rows[1][0]
+        total = 0
+        for col_id, number in enumerate(self.rows[0]):
+            submatrix = Matrix(self.height-1, self.width-1)
+            tmp_rows = copy.deepcopy(self.rows)
+            tmp_rows = tmp_rows[1:]
+            for row in tmp_rows:
+                del row[col_id]
+            submatrix.rows = tmp_rows
+            total += number * pow(-1, col_id) * submatrix.matrix_determinant()
+        return total
+
 
 def select_action():
     first_menu_lvl = '''1. Add matrices
 2. Multiply matrix by a constant
 3. Multiply matrices
 4. Transpose matrix
-0. Exit'''
+5. Calculate a determinant
+0. Exit
+'''
     print(first_menu_lvl)
     selection = input('Your choice: ')
     if selection == '1':
@@ -143,6 +166,8 @@ def select_action():
             return 'h_trans'
         else:
             return None
+    elif selection == '5':
+        return 'determinant'
     else:
         return None
 
@@ -213,3 +238,11 @@ if __name__ == '__main__':
                 print('The result is:\n', A.horizontal_transpose(), sep='')
             except MatrixError:
                 print('ERROR')
+        elif action == 'determinant':
+            A = get_matrix('Enter matrix:')
+            try:
+                print(A.matrix_determinant())
+            except MatrixError:
+                print('ERROR')
+        else:
+            print('Unknown operation')
