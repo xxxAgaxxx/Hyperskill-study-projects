@@ -64,6 +64,19 @@ class Matrix:
         mat.rows = self.rows[::-1]
         return mat
 
+    def adjugade_matrix(self):
+        cofactors = Matrix(self.height, self.width)
+        for row_id, row in enumerate(self.rows):
+            for column_id, number in enumerate(row):
+                submatrix = Matrix(self.height-1, self.width-1)
+                tmp_rows = copy.deepcopy(self.rows)
+                del tmp_rows[row_id]
+                for row in tmp_rows:
+                    del row[column_id]
+                submatrix.rows = tmp_rows
+                cofactors.rows[row_id][column_id] = pow(-1, row_id + column_id) * submatrix.matrix_determinant()
+        return cofactors.main_transpose()
+
     def __add__(self, mat):
         """ Add a matrix to this matrix and
         return the new matrix. Doesn't modify
@@ -137,6 +150,10 @@ class Matrix:
             total += number * pow(-1, col_id) * submatrix.matrix_determinant()
         return total
 
+    def inverse_matrix(self):
+        inverse = self.adjugade_matrix() * (1 / self.matrix_determinant())
+        return inverse
+
 
 def select_action():
     first_menu_lvl = '''1. Add matrices
@@ -144,6 +161,7 @@ def select_action():
 3. Multiply matrices
 4. Transpose matrix
 5. Calculate a determinant
+6. Inverse matrix
 0. Exit
 '''
     print(first_menu_lvl)
@@ -168,6 +186,8 @@ def select_action():
             return None
     elif selection == '5':
         return 'determinant'
+    elif selection == '6':
+        return 'inverse'
     else:
         return None
 
@@ -244,5 +264,8 @@ if __name__ == '__main__':
                 print(A.matrix_determinant())
             except MatrixError:
                 print('ERROR')
+        elif action == 'inverse':
+            A = get_matrix('Enter matrix:')
+            print(A.inverse_matrix())
         else:
             print('Unknown operation')
