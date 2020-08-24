@@ -45,10 +45,19 @@ class Bank:
             account_identifier = ''.join(map(str, [random.randint(0, 9) for _ in range(num_len - len(self.__bank_bin) - 1)]))
             if account_identifier not in self.__accounts:
                 break
-        return self.__bank_bin + account_identifier + self.checksum()
+        return self.__bank_bin + account_identifier + self.checksum(account_identifier)
 
-    def checksum(self):
-        return str(5)
+    def checksum(self, number_base):
+        number_base = (self.__bank_bin + number_base)[::-1]
+        evens = 0
+        for num in number_base[0::2]:
+            num = int(num) * 2
+            if num > 9:
+                evens += num - 9
+            else:
+                evens += num
+        odds = sum(map(int, number_base[1::2]))
+        return str((10 - (evens + odds) % 10) % 10)
 
     def handle_unlogged(self):
         hello_message = '1. Create an account\n2. Log into account\n0. Exit\n'
