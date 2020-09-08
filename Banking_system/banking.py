@@ -12,14 +12,15 @@ class BankError(Exception):
 
 
 class Bank:
-    def __init__(self, bank_bin='400000'):
+    '''Interface for interaction with user.
+    Store information about user accounts in data base.
+    '''
+    def __init__(self, data_base=None, bank_bin='400000'):
         self.__bank_bin = bank_bin
+        self.__used_accounts = []
         self.__is_authorized = False
-        # будет храниться в card.number
-        self.__accounts = dict()
         self.__num_of_clients = 0
-        self.__current_user = '0'
-        self.__data_base = 'example.s3db'
+        self.__data_base = data_base if data_base else 'card.s3db'
         self.__db_connection = sqlite3.connect(self.__data_base)
 
     def is_logged_in(self):
@@ -112,6 +113,11 @@ class Bank:
                 evens += num
         odds = sum(map(int, number_base[1::2]))
         return str((10 - (evens + odds) % 10) % 10)
+
+class Card(Bank):
+    def __init__():
+        pass
+
 
 
 
